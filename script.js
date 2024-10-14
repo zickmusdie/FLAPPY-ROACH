@@ -114,7 +114,7 @@ function displayGameOver() {
 function drawIntro() {
     ctx.fillStyle = "yellow";
     ctx.font = "36px Arial";
-    ctx.fillText("Flying Cockroach Let's Go", 50, canvas.height / 2);
+    ctx.fillText("Flying Cockroach!", 50, canvas.height / 2);
 }
 
 function gameLoop() {
