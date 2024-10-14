@@ -1,0 +1,45 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(to bottom, #d4e57e, #a6d822);
+}
+
+.game-container {
+    position: relative;
+    border: 10px solid #ffeb3b; /* Pattern border */
+    padding: 10px;
+}
+
+canvas {
+    background-image: url('https://i.postimg.cc/zHqcyL2h/Back-Ground.png');
+    background-size: cover;
+    border: 2px solid #000;
+}
+
+.score {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    color: #ffeb3b; /* Changed to yellow for better visibility */
+    text-shadow: 2px 2px 2px black; /* Added text shadow */
+}
+
+.animation {
+    position: absolute;
+    font-size: 48px;
+    color: #ffeb3b;
+    text-shadow: 2px 2px 2px black;
+    animation: fadeIn 2s ease-in-out forwards;
+    top: 250px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
