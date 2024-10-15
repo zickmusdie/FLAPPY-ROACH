@@ -2,19 +2,38 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 // Load images
-const birdImg = new Image();
-const pipeImg = new Image();
-const backgroundImg = new Image();
+const birdImage = new Image();
+birdImage.src = 'https://i.postimg.cc/kBX1rqYJ/BIRD-2.png'; // Image for bird
 
-birdImg.src = "https://i.postimg.cc/vcVvXnHr/IPIS.png"; // Bird image URL
-pipeImg.src = "https://i.postimg.cc/8s3Hh4Dk/bong.png"; // Pipe image URL
-backgroundImg.src = "https://i.postimg.cc/zHqcyL2h/Back-Ground.jpg"; // Updated Background image URL
+const pipeTopImage = new Image();
+pipeTopImage.src = 'https://i.postimg.cc/JymHg4KK/PIPE-ABOVE.png'; // New cropped pipe above URL
+
+const pipeBottomImage = new Image();
+pipeBottomImage.src = 'https://i.postimg.cc/f3KShnrs/PIPE-BELOW.png'; // New cropped pipe below URL
+
+// Load confetti images
+const confettiImages = [];
+const confettiUrls = [
+    'https://i.postimg.cc/2qhRqCDp/Confetti1.png',
+    'https://i.postimg.cc/ygKqc21D/Confetti2.png',
+    'https://i.postimg.cc/dkjbBn34/Confetti3.png',
+    'https://i.postimg.cc/yWV4dqp5/Confetti4.png',
+    'https://i.postimg.cc/N2GWPTrY/Confetti5.png',
+    'https://i.postimg.cc/grN9LMf0/Confetti6.png',
+    'https://i.postimg.cc/QHt2QQ3J/Confetti7.png',
+];
+
+confettiUrls.forEach(url => {
+    const img = new Image();
+    img.src = url;
+    confettiImages.push(img);
+});
 
 let bird = {
     x: 50,
     y: 150,
-    width: 34, // Adjusted width for visibility
-    height: 24, // Adjusted height for visibility
+    width: 24,
+    height: 34,
     gravity: 0.5,
     lift: -8,
     velocity: 0,
@@ -24,6 +43,7 @@ let pipes = [];
 let frame = 0;
 let score = 0;
 let gameOver = false;
+let showConfetti = false;
 
 function createPipe() {
     const pipeHeight = Math.random() * (canvas.height / 2) + 50;
@@ -34,18 +54,14 @@ function createPipe() {
     });
 }
 
-function drawBackground() {
-    ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
-}
-
 function drawBird() {
-    ctx.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
+    ctx.drawImage(birdImage, bird.x, bird.y, bird.width, bird.height);
 }
 
 function drawPipes() {
     pipes.forEach(pipe => {
-        ctx.drawImage(pipeImg, pipe.x, 0, 50, pipe.top); // Top pipe
-        ctx.drawImage(pipeImg, pipe.x, canvas.height - pipe.bottom, 50, pipe.bottom); // Bottom pipe
+        ctx.drawImage(pipeTopImage, pipe.x, 0, 50, pipe.top); // Draw the top pipe
+        ctx.drawImage(pipeBottomImage, pipe.x, canvas.height - pipe.bottom, 50, pipe.bottom); // Draw the bottom pipe
     });
 }
 
@@ -53,22 +69,12 @@ function updatePipes() {
     if (frame % 75 === 0) {
         createPipe();
     }
-
     pipes.forEach(pipe => {
         pipe.x -= 2;
     });
-
-    // Increment score for each pipe passed
-    pipes.forEach(pipe => {
-        if (pipe.x + 50 < bird.x && !pipe.passed) {
-            score++;
-            pipe.passed = true; // Mark this pipe as passed
-        }
-    });
-
-    // Remove pipes that have gone off-screen
     if (pipes.length > 0 && pipes[0].x < -50) {
         pipes.shift();
+        score++;
     }
 }
 
@@ -82,16 +88,15 @@ function collisionDetection() {
             gameOver = true;
         }
     });
-
     if (bird.y + bird.height >= canvas.height || bird.y < 0) {
         gameOver = true;
     }
 }
 
 function drawScore() {
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = "white";
     ctx.font = "24px Arial";
-    ctx.fillText(`Score: ${score}`, canvas.width - 100, 30);
+    ctx.fillText(`Score: ${score}`, canvas.width - 90, 30); // Score position updated
 }
 
 function resetGame() {
@@ -101,65 +106,54 @@ function resetGame() {
     frame = 0;
     score = 0;
     gameOver = false;
-
-    // Hide the Game Over message
-    document.getElementById("gameOverMessage").style.display = "none";
+    showConfetti = true; // Show confetti on reset
 }
 
-function displayGameOver() {
-    document.getElementById("finalScore").innerText = `Final Score: ${score}`;
-    document.getElementById("gameOverMessage").style.display = "block";
-}
-
-function drawIntro() {
-    ctx.fillStyle = "yellow";
-    ctx.font = "36px Arial";
-    ctx.fillText("Flying Cockroach!", 50, canvas.height / 2);
+function drawConfetti() {
+    confettiImages.forEach((confetti, index) => {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        ctx.drawImage(confetti, x, y, 30, 30); // Draw confetti images at random positions
+    });
 }
 
 function gameLoop() {
-    drawBackground(); // Draw background
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    if (showConfetti) {
+        drawConfetti();
+        setTimeout(() => {
+            showConfetti = false; // Hide confetti after a short duration
+        }, 2000); // Show confetti for 2 seconds
+    }
 
     if (!gameOver) {
         bird.velocity += bird.gravity;
         bird.y += bird.velocity;
-
         drawBird();
         drawPipes();
         updatePipes();
         collisionDetection();
         drawScore();
     } else {
-        displayGameOver();
+        ctx.fillStyle = "red";
+        ctx.font = "48px Arial";
+        ctx.fillText("Game Over", 70, canvas.height / 2);
+        ctx.fillText(`Score: ${score}`, 70, canvas.height / 2 + 50); // Show score after game over
+        ctx.fillText("Tap to Restart", 70, canvas.height / 2 + 100);
     }
-
     frame++;
     requestAnimationFrame(gameLoop);
 }
 
-// Start the game when any key is pressed
-document.addEventListener("keydown", (event) => {
-    if (event.code === "Space" && !gameOver) {
+// Touch controls for mobile
+canvas.addEventListener("click", () => {
+    if (!gameOver) {
         bird.velocity = bird.lift;
-    } else if (gameOver) {
+    } else {
         resetGame();
-        drawIntro(); // Show intro message before restarting the game
-        setTimeout(() => {
-            gameLoop();
-        }, 2000); // Start game after 2 seconds
     }
 });
 
 // Start the game loop
-birdImg.onload = function () {
-    pipeImg.onload = function () {
-        backgroundImg.onload = function () {
-            drawIntro(); // Show intro message before starting the game
-            setTimeout(() => {
-                gameLoop();
-            }, 2000); // Start game after 2 seconds
-        };
-    };
-};
+gameLoop();

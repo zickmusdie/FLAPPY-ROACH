@@ -1,0 +1,23 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(to bottom, #f0e68c, #3dbf2a); /* Optional gradient background */
+}
+
+.game-container {
+    position: relative;
+    border: 5px dashed #000; /* Optional dashed border around the canvas */
+}
+
+canvas {
+    background-image: url('https://i.postimg.cc/LY8TcVvy/Back-Ground.png'); /* New background image */
+    background-size: cover; /* Cover the entire canvas */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent image repetition */
+    width: 400px; /* Ensure width matches canvas */
+    height: 600px; /* Ensure height matches canvas */
+    border: 2px solid #000; /* Optional border for the canvas */
+}
